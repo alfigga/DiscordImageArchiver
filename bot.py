@@ -17,7 +17,18 @@ async def archive(ctx, channel : discord.TextChannel):
             if any(attachment.filename.lower().endswith(image) for image in image_types):
                 await attachment.save(attachment.filename)
 
+@client.command()
+async def transfer(ctx, channel : int,  output : int):
+    image_types = ["png", "jpeg", "gif", "jpg"]
 
+    channel = client.get_channel(channel)
+    output = client.get_channel(output)
+
+    async for message in channel.history(limit=200):
+        for attachment in message.attachments:
+            if any(attachment.filename.lower().endswith(image) for image in image_types):
+                url = str(attachment.url)
+                await output.send(url)
 
 with open('./config.json') as f:
     config = json.load(f)
