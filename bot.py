@@ -1,4 +1,4 @@
-import discord, json
+import discord, json, os, shutil
 from discord.ext import commands
 
 client = commands.Bot(description="Image Archiver by https://alf.wtf/", command_prefix="$", case_insensitive=True)
@@ -10,15 +10,19 @@ async def on_ready():
 
 @client.command()
 async def archive(ctx, channel : discord.TextChannel):
+    await ctx.send("Starting.")
+    os.mkdir("output")
     image_types = ["png", "jpeg", "gif", "jpg"]
 
     async for message in channel.history(limit=200):
         for attachment in message.attachments:
             if any(attachment.filename.lower().endswith(image) for image in image_types):
-                await attachment.save(attachment.filename)
+                await attachment.save(f"./output/{attachment.filename}")
+    shutil.make_archive("output", "zip", "./output/")
+    await ctx.send("Done!")
 
 @client.command()
-async def transfer(ctx, channel : int,  output : int):
+async def send(ctx, channel : int,  output : int):
     image_types = ["png", "jpeg", "gif", "jpg"]
 
     channel = client.get_channel(channel)
